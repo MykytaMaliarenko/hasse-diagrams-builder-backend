@@ -8,3 +8,9 @@ class Link:
     def __init__(self, x: p.Point, y: p.Point):
         self.x = x
         self.y = y
+
+    def to_dict(self) -> dict:
+        return {
+            "x": self.x.id,
+            "y": self.y.id
+        }
