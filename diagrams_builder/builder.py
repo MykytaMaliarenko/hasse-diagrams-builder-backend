@@ -19,7 +19,7 @@ def build_diagram(equation: str, dataset: list) -> DiagramData:
 
 
 def parse_dataset(dataset: list) -> list:
-    pass
+    return [Point(index, elem) for index, elem in enumerate(dataset)]
 
 
 def calculate_all_links(points: list, equation: str) -> list:
