@@ -11,3 +11,9 @@ class Point:
             return other.id == self.id
         else:
             return False
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "value": self.value
+        }
