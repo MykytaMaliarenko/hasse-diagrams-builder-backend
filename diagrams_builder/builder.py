@@ -25,7 +25,7 @@ def parse_dataset(dataset: list) -> list:
 def calculate_all_links(points: list, equation: str) -> list:
     links = list()
 
-    for combination in list(itertools.combinations(points, 2)):
+    for combination in list(itertools.permutations(points, 2)):
         a: Point = combination[0]
         b: Point = combination[1]
 
