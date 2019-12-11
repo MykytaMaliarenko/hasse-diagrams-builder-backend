@@ -56,7 +56,7 @@ def path_exists(links: list, x: Point, y: Point) -> bool:
             if link.y == y:
                 return True
 
-            if path_exists(res_links[:index] + res_links[index + 1:], link.x, y):
+            if path_exists(links, link.y, y):
                 return True
 
         return False
