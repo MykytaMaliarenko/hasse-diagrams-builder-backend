@@ -1,4 +1,12 @@
-import http.server
-import socketserver
+from flask import Flask
+from flask_restful import Api
 
-Handler = http.server.SimpleHTTPRequestHandler
+import handler
+
+app = Flask(__name__)
+api = Api(app)
+
+api.add_resource(handler.DiagramBuilder, "/diagramBuilder")
+
+if __name__ == '__main__':
+    app.run(debug=True)
