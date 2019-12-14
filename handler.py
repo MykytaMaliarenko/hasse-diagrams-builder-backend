@@ -18,11 +18,11 @@ class DiagramBuilder(Resource):
         equation: str = args["equation"]
         dataset: list = args["dataset"]
 
-        if len(equation) == 0:
-            return "equation is empty", 400
+        if not isinstance(equation, str) or len(equation) == 0:
+            return "equation is not valid", 400
 
-        if len(dataset) == 0:
-            return "dataset is empty", 400
+        if not isinstance(dataset, list) or len(dataset) == 0:
+            return "dataset is not valid", 400
 
         equation = equation_parser.process_str(equation)
 
