@@ -1,3 +1,5 @@
+from typing import List, Any, Callable
+
 from diagrams_builder.diagram_data import DiagramData
 from diagrams_builder.point import Point
 from diagrams_builder.link import Link
@@ -14,6 +16,8 @@ def build_diagram(equation: str, dataset: list) -> DiagramData:
 
     links = calculate_all_links(points, parsed_equation)
     remove_transitive_links(links)
+
+    calculate_ranks(points, links)
 
     return DiagramData(points, links)
 
@@ -48,7 +52,7 @@ def remove_transitive_links(links: list):
 
 
 def path_exists(links: list, x: Point, y: Point) -> bool:
-    res_links = list(filter(lambda link: link.x == x, links))
+    res_links = list(filter(lambda l: l.x == x, links))
     if len(res_links) == 0:
         return False
     else:
@@ -60,3 +64,20 @@ def path_exists(links: list, x: Point, y: Point) -> bool:
                 return True
 
         return False
+
+
+def calculate_ranks(points: List[Point], links: List[Link]):
+    find_links_witch_begins_with: Callable[[Any], List[Any]] = lambda p: list(filter(lambda l: l.x == p, links))
+    find_links_witch_end_with: Callable[[Any], List[Any]] = lambda p: list(filter(lambda l: l.y == p, links))
+
+    def calculate_child_nodes_ranks(p: Point):
+        begin_with = find_links_witch_begins_with(p)
+        for link in begin_with:
+            child_point: Point = link.y
+            child_point.rank = p.rank + 1
+            calculate_child_nodes_ranks(child_point)
+
+    bottom_points = list(filter(lambda p: len(find_links_witch_end_with(p)) == 0, points))
+    for point in bottom_points:
+        point.rank = 0
+        calculate_child_nodes_ranks(point)
