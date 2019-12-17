@@ -9,6 +9,9 @@ class Link:
         self.x = x
         self.y = y
 
+    def __repr__(self):
+        return "{} -> {}".format(self.x, self.y)
+
     def to_dict(self) -> dict:
         return {
             "x": self.x.id,
