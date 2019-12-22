@@ -7,6 +7,10 @@ import equation_parser as ep
 import itertools
 
 
+find_links_witch_begins_with: Callable[[Any], List[Any]] = lambda p, links: list(filter(lambda l: l.x == p, links))
+find_links_witch_end_with: Callable[[Any], List[Any]] = lambda p, links: list(filter(lambda l: l.y == p, links))
+
+
 def build_diagram(equation: str, dataset: list) -> DiagramData:
     parsed_equation = ep.process_str(equation)
     points = parse_dataset(dataset)
@@ -64,17 +68,14 @@ def path_exists(links: list, x: Point, y: Point) -> bool:
 
 
 def calculate_ranks(points: List[Point], links: List[Link]):
-    find_links_witch_begins_with: Callable[[Any], List[Any]] = lambda p: list(filter(lambda l: l.x == p, links))
-    find_links_witch_end_with: Callable[[Any], List[Any]] = lambda p: list(filter(lambda l: l.y == p, links))
-
     def calculate_child_nodes_ranks(p: Point):
-        begin_with = find_links_witch_begins_with(p)
+        begin_with = find_links_witch_begins_with(p, links)
         for link in begin_with:
             child_point: Point = link.y
             child_point.rank = p.rank + 1
             calculate_child_nodes_ranks(child_point)
 
-    bottom_points = list(filter(lambda p: len(find_links_witch_end_with(p)) == 0, points))
+    bottom_points = list(filter(lambda p: len(find_links_witch_end_with(p, links)) == 0, points))
     for point in bottom_points:
         point.rank = 0
         calculate_child_nodes_ranks(point)
