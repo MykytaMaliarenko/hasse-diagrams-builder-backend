@@ -6,9 +6,6 @@ from diagrams_builder.link import Link
 import equation_parser as ep
 import itertools
 
-X_VARIABLE_NAME = "x"
-Y_VARIABLE_NAME = "y"
-
 
 def build_diagram(equation: str, dataset: list) -> DiagramData:
     parsed_equation = ep.process_str(equation)
