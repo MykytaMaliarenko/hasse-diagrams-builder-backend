@@ -16,7 +16,7 @@ class DiagramData:
             i += 1
             temp = list(filter(lambda p: p.rank == i, self.points))
 
-        points_json = list(map(lambda line: list(map(lambda p: p.to_dict(), line)), points_sorted_by_rank))
+        points_json = list(map(lambda line: list(map(lambda p: p.dict, line)), points_sorted_by_rank))
 
         links_json = list()
         [links_json.append(el.to_dict()) for el in self.links]

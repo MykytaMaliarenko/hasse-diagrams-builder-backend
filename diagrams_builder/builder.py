@@ -1,14 +1,17 @@
+from math import sin, cos
 from typing import List, Any, Callable
 
 from diagrams_builder.diagram_data import DiagramData
-from diagrams_builder.point import Point
+from diagrams_builder.points import Point, QuasiPoint, BasicPoint
 from diagrams_builder.link import Link
 import equation_parser as ep
 import itertools
 
-
 find_links_witch_begins_with: Callable[[Any], List[Any]] = lambda p, links: list(filter(lambda l: l.x == p, links))
 find_links_witch_end_with: Callable[[Any], List[Any]] = lambda p, links: list(filter(lambda l: l.y == p, links))
+
+find_links_witch_are_quasi: Callable = lambda l, links: \
+    list(filter(lambda inner_l: inner_l.y == l.x, find_links_witch_begins_with(l.y, links)))
 
 
 def build_diagram(equation: str, dataset: list) -> DiagramData:
@@ -16,15 +19,20 @@ def build_diagram(equation: str, dataset: list) -> DiagramData:
     points = parse_dataset(dataset)
 
     links = calculate_all_links(points, parsed_equation)
+
+    if is_quasi_order(links):
+        print("quasi")
+        while is_quasi_order(links):
+            points = combine_quasi_points(points, links)
+            links = calculate_all_links(points, parsed_equation)
+
     remove_transitive_links(links)
-
     calculate_ranks(points, links)
-
     return DiagramData(points, links)
 
 
 def parse_dataset(dataset: list) -> list:
-    return [Point(index, elem) for index, elem in enumerate(dataset)]
+    return [BasicPoint(index, elem) for index, elem in enumerate(dataset)]
 
 
 def calculate_all_links(points: list, equation: str) -> list:
@@ -40,6 +48,35 @@ def calculate_all_links(points: list, equation: str) -> list:
             links.append(Link(a, b))
 
     return links
+
+
+def is_quasi_order(links: list) -> bool:
+    return not len(list(
+            filter(lambda l: len(find_links_witch_are_quasi(l, links)) != 0, links)
+    )) == 0
+
+
+def combine_quasi_points(points: list, links: list) -> list:
+    res = []
+
+    quasi_links = list(filter(lambda l: find_links_witch_are_quasi(l, links), links))
+    for i, link in enumerate(quasi_links):
+        has_x_in_other_quasi = len(list(filter(lambda qp: link.x in qp, res))) != 0
+        has_y_in_other_quasi = len(list(filter(lambda qp: link.y in qp, res))) != 0
+
+        if has_x_in_other_quasi and not has_y_in_other_quasi:
+            list(filter(lambda qp: link.x in qp, res))[0] += link.y
+        elif has_y_in_other_quasi and not has_x_in_other_quasi:
+            list(filter(lambda qp: link.y in qp, res))[0] += link.x
+        elif not has_x_in_other_quasi and not has_y_in_other_quasi:
+            res.append(QuasiPoint(id=i, points=[link.x, link.y]))
+
+    free_points = list(filter(lambda p: len(list(filter(lambda qp: p in qp, res))) == 0, points))
+    for i, point in enumerate(free_points):
+        point.id = len(quasi_links) + i
+        res.append(point)
+
+    return res
 
 
 def remove_transitive_links(links: list):
