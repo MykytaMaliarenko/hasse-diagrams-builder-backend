@@ -1,11 +1,11 @@
-import diagrams_builder.point as p
+from diagrams_builder.points import Point
 
 
 class Link:
-    x: p.Point
-    y: p.Point
+    x: Point
+    y: Point
 
-    def __init__(self, x: p.Point, y: p.Point):
+    def __init__(self, x: Point, y: Point):
         self.x = x
         self.y = y
 
